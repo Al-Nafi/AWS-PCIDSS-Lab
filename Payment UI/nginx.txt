@@ -1,0 +1,33 @@
+sudo apt update
+sudo apt install nginx
+sudo mkdir /var/www/site
+sudo chown -R $USER:$USER /var/www/site
+sudo nano /etc/nginx/sites-available/site
+
+server {
+    listen 80;
+    server_name site www.site;
+    root /var/www/site;
+
+    index index.html index.htm index.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+     }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+}
+
+sudo ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
+sudo unlink /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl reload nginx
+nano /var/www/site/index.html
